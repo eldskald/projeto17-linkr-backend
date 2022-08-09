@@ -25,9 +25,7 @@ export async function signIn(req,res){
         const comparePassword = bcrypt.compareSync(password,user.password);
 
         if(user&&comparePassword){
-            const data = {userId:user.id,
-                userName:user.name,
-                userPicture:user.profilePictureUrl};
+            const data = {userId:user.id};
             const secretKey=process.env.JWT_SECRET;
             const token=jwt.sign(data,secretKey);
             await authRepository.newSession(user.id);

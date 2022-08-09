@@ -25,10 +25,17 @@ async function emailCheck(email){
     }
     return false;
 }
+async function getUser(userId){
+    const {rows:user}=await connection.query(`
+    SELECT name,email,"profilePictureUrl" FROM users WHERE id=$1
+    `,[userId])
+    return user[0];
+}
 
 export const authRepository ={
     signUp,
     signIn,
     newSession,
+    getUser,
     emailCheck
 }

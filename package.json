@@ -2,7 +2,7 @@
   "name": "projeto17-linkr-backend",
   "version": "1.0.0",
   "description": "Projeto 17 da Driven",
-  "type": "modules",
+  "type": "module",
   "main": "src/server.js",
   "scripts": {
     "dev": "nodemon ./src/server.js",
@@ -15,7 +15,9 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
-    "joi": "^17.6.0"
+    "joi": "^17.6.0",
+    "pg": "^8.7.3",
+    "string-strip-html": "^11.1.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.19"

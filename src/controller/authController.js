@@ -1,9 +1,10 @@
 import { authRepository } from "../repositories/authRepository.js";
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 export async function signUp (req, res){
     try {
-        const {email,password,name,pictureUrl} = req.body
+        const {email,password,name,pictureUrl} = res.locals.body;
         const alreadyExists=await authRepository.emailCheck(email);
         if(alreadyExists){
             return res.sendStatus(409);
@@ -14,6 +15,28 @@ export async function signUp (req, res){
         
     } catch (error) {
         console.log(error.message);
-        return res.status(500).send('catch teste')
+        return res.status(500).send('catch signUp')
+    }
+}
+export async function signIn(req,res){
+    try{
+        const {email,password}=res.locals.body;
+        const user = await authRepository.signIn(email);
+        const comparePassword = bcrypt.compareSync(password,user.password);
+
+        if(user&&comparePassword){
+            const data = {userId:user.id,
+                userName:user.name,
+                userPicture:user.profilePictureUrl};
+            const secretKey=process.env.JWT_SECRET;
+            const token=jwt.sign(data,secretKey);
+            await authRepository.newSession(user.id);
+            return res.status(200).send(token);
+        }
+        res.sendStatus(401);
+    }
+    catch (error) {
+        console.log(error.message);
+        return res.status(500).send('catch signIn')
     }
 }

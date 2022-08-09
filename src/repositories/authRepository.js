@@ -1,9 +1,20 @@
 import connection from "../../config/database.js";
 
 async function signUp(email,password,name,pictureUrl){
-    return connection.query(`
+    return await connection.query(`
     INSERT INTO users (name,email,password,"profilePictureUrl") VALUES ($1,$2,$3,$4)
-    `,[email,password,name,pictureUrl]);
+    `,[name,email,password,pictureUrl]);
+}
+async function signIn(email){
+    const {rows:user} = await connection.query(`
+    SELECT * FROM users WHERE email=$1
+    `,[email]);
+    return user[0];
+}
+async function newSession(userId){
+    connection.query(`
+    INSERT INTO sessions ("userId") VALUES ($1)
+    `,[userId])    
 }
 async function emailCheck(email){
     const {rows: alreadyExist} = await connection.query(`
@@ -17,5 +28,7 @@ async function emailCheck(email){
 
 export const authRepository ={
     signUp,
+    signIn,
+    newSession,
     emailCheck
 }

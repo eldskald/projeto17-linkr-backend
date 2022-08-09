@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { testeCountroler } from "../countrollers/testeCountroller.js";
+import { testeControler } from "../controller/testeController.js";
 
 const testeRouter = Router()
 
-testeRouter.get('/teste', testeCountroler)
+testeRouter.get('/teste', testeControler)
 
 export default testeRouter

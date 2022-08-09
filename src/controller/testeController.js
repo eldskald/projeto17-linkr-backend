@@ -1,6 +1,6 @@
 import connection from "../../config/database.js";
 
-export async function testeCountroler (req, res){
+export async function testeControler (req, res){
 
     try {
         const teste = await connection.query(`SELECT * FROM users`)

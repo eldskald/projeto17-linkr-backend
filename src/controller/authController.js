@@ -20,16 +20,18 @@ export async function signUp (req, res){
 }
 export async function signIn(req,res){
     try{
+        console.log(res.locals.body)
         const {email,password}=res.locals.body;
         const user = await authRepository.signIn(email);
-        const comparePassword = bcrypt.compareSync(password,user.password);
-
-        if(user&&comparePassword){
-            const data = {userId:user.id};
-            const secretKey=process.env.JWT_SECRET;
-            const token=jwt.sign(data,secretKey);
-            await authRepository.newSession(user.id);
-            return res.status(200).send(token);
+        if(user){
+            const comparePassword = bcrypt.compareSync(password,user.password);
+            if(comparePassword){
+                const data = {userId:user.id};
+                const secretKey=process.env.JWT_SECRET;
+                const token=jwt.sign(data,secretKey);
+                await authRepository.newSession(user.id);
+                return res.status(200).send(token);
+            }
         }
         res.sendStatus(401);
     }

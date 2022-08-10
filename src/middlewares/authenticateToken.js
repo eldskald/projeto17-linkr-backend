@@ -14,7 +14,6 @@ export async function validateToken(req, res, next) {
   try {
     try{
       console.log('Second Try')
-      const jwt = require('jsonwebtoken');
       const userData = jwt.verify(token, secretKey);
       console.log('user Data :', userData)
     }

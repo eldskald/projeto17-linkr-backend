@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import testeRouter from './teste.js';
 import authRouter from './authRouter.js';
+import editionPost from './editionPost.js';
 
 const router = Router();
 
-router.use(testeRouter)
 router.use(authRouter)
+router.use(editionPost)
 
 export default router;

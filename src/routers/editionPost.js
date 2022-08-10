@@ -1,8 +1,9 @@
 import { Router } from "express";
-import { testeCountroler } from "../controllers/testeController.js";
+import { editionController } from "../controller/editionController.js";
+import { validateToken } from "../middlewares/authenticateToken.js";
 
 const editionPost = Router()
 
-editionPost.get('/teste', testeCountroler)
+editionPost.post('/edit', validateToken)
 
 export default editionPost

@@ -2,7 +2,7 @@ CREATE TABLE users (
 	id SERIAL NOT NULL PRIMARY KEY,
 	"name" VARCHAR(50) NOT NULL,
     "email" VARCHAR(254) NOT NULL UNIQUE,
-	"password" TEXT NOT NULL UNIQUE,
+	"password" TEXT NOT NULL,
     "profilePictureUrl" TEXT NOT NULL,
     "createdAt" DATE NOT NULL DEFAULT NOW()
 );

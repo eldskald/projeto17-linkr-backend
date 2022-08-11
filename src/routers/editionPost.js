@@ -4,6 +4,6 @@ import { validateToken } from "../middlewares/authenticateToken.js";
 
 const editionPost = Router()
 
-editionPost.post('/edit', validateToken)
+editionPost.post('/edit/:id', validateToken, editionController)
 
 export default editionPost

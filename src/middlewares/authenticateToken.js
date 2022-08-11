@@ -1,9 +1,5 @@
 import { authRepository } from "../repositories/authRepository.js";
-<<<<<<< HEAD
 import jwt from "jsonwebtoken"
-=======
-import jwt from "jsonwebtoken";
->>>>>>> origin/authBranch
 
 export async function validateToken(req, res, next) {
   const authorization = req.headers.authorization;

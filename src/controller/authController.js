@@ -42,6 +42,15 @@ export async function signIn(req,res){
 }
 export async function getUser(req,res){
     const userId=res.locals.userId    
+    try{
     const user= await authRepository.getUser(userId);
-    return res.status(200).send(user);
+    if(user){
+        return res.status(200).send(user);
+    }
+    return res.status(404).send("User not found");
+    }
+    catch (error) {
+        console.log(error.message);
+        return res.status(500).send('catch signIn');
+    }
 }

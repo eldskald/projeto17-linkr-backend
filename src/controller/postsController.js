@@ -3,7 +3,7 @@ import { getPosts } from '../repositories/postsRepository.js';
 export async function listPosts(req, res) {
     try {
         const { userId } = res.locals;
-        const { limit, offset } = req.query;
+        let { limit, offset } = req.query;
         limit = parseInt(limit);
         offset = parseInt(offset);
         if (isNaN(limit) || isNaN(offset) || limit <= offset || offset <= 0) {

@@ -8,14 +8,11 @@ function schemaValidation(schema) {
             body[key] = stripHtml(body[key]).result.trim();
         }
 
-        const { schemaError } = schema.validate(body, { abortEarly: false });
-        if (schemaError) {
-            let messages = schemaError.details.map(value => value.message);
-            for (const message of messages) {
-                message = message.replaceAll('"', '');
-                message[0] = message[0].toUpperCase();
-            }
-            res.status(422).send(messages.join('/n'));
+        const validate = schema.validate(body, { abortEarly: false });
+        console.log(validate.error)
+        if (validate.error) {
+            let messages = validate.error.details.map(value => value.message);
+            return res.status(422).send(messages.join('/n'));
         }
 
         res.locals.body = body;

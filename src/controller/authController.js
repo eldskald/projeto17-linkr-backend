@@ -20,7 +20,6 @@ export async function signUp (req, res){
 }
 export async function signIn(req,res){
     try{
-        console.log(res.locals.body)
         const {email,password}=res.locals.body;
         const user = await authRepository.signIn(email);
         if(user){

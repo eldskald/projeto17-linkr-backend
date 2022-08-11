@@ -2,12 +2,15 @@ import { getPosts } from '../repositories/postsRepository.js';
 
 export async function listPosts(req, res) {
     try {
-        const { limit, amount } = req.query;
-        if (!Number.isInteger(limit) && !Number.isInteger(amount)) {
+        const { userId } = res.locals;
+        const { limit, offset } = req.query;
+        limit = parseInt(limit);
+        offset = parseInt(offset);
+        if (isNaN(limit) || isNaN(offset) || limit <= offset || offset <= 0) {
             return res.sendStatus(400);
         }
 
-        const posts = await getPosts(limit, Math.max(limit - amount, 0));
+        const posts = await getPosts(limit, offset, userId);
         return res.status(200).send(posts);
 
     } catch (err) {

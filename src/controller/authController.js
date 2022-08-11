@@ -37,6 +37,11 @@ export async function signIn(req,res){
     }
     catch (error) {
         console.log(error.message);
-        return res.status(500).send('catch signIn')
+        return res.status(500).send('catch signIn');
     }
+}
+export async function getUser(req,res){
+    const userId=res.locals.userId    
+    const user= await authRepository.getUser(userId);
+    return res.status(200).send(user);
 }

@@ -20,21 +20,37 @@ export async function signUp (req, res){
 }
 export async function signIn(req,res){
     try{
+        console.log(res.locals.body)
         const {email,password}=res.locals.body;
         const user = await authRepository.signIn(email);
-        const comparePassword = bcrypt.compareSync(password,user.password);
-
-        if(user&&comparePassword){
-            const data = {userId:user.id};
-            const secretKey=process.env.JWT_SECRET;
-            const token=jwt.sign(data,secretKey);
-            await authRepository.newSession(user.id);
-            return res.status(200).send(token);
+        if(user){
+            const comparePassword = bcrypt.compareSync(password,user.password);
+            if(comparePassword){
+                const data = {userId:user.id};
+                const secretKey=process.env.JWT_SECRET;
+                const token=jwt.sign(data,secretKey);
+                await authRepository.newSession(user.id);
+                return res.status(200).send(token);
+            }
         }
         res.sendStatus(401);
     }
     catch (error) {
         console.log(error.message);
-        return res.status(500).send('catch signIn')
+        return res.status(500).send('catch signIn');
+    }
+}
+export async function getUser(req,res){
+    const userId=res.locals.userId    
+    try{
+    const user= await authRepository.getUser(userId);
+    if(user){
+        return res.status(200).send(user);
+    }
+    return res.status(404).send("User not found");
+    }
+    catch (error) {
+        console.log(error.message);
+        return res.status(500).send('catch signIn');
     }
 }

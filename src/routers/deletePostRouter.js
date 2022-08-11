@@ -1,10 +1,8 @@
 import { Router } from "express";
-import postEdit from "../schemas/editSchema.js";
+import { validateToken } from "../middlewares/authenticateToken.js";
 
-const deletePostRouter = Router()
+const deletePost = Router()
 
-deletePostRouter.delete('/delete/:id',   validateToken,
-                                schemaValidation(postEdit), 
-                                editionController)
+deletePost.delete('/delete/:id',  validateToken )
 
-export default deletePostRouter
+export default deletePost

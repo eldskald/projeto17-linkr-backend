@@ -1,18 +1,17 @@
 import connection from "../../config/database.js";
+import { editionRepository } from "../repositories/editionRepository.js";
 
 export async function editionController (req, res){
     const {userId} = res.locals
     const postId = parseInt(req.params.id)
-    const postEdit = req.body
+    const {link, description} = req.body
+    console.log('link, description :', link, description)
+    
+   try{
+        const post = await editionRepository.getPost(postId)
 
-    try {
-        const {rows:post} = await connection.query(`SELECT * FROM posts
-                                                    WHERE posts.id = ${postId}`)
-        
-        if(userId == post[0].userId){
-            await connection.query(`UPDATE  posts
-                                    SET link = '${postEdit.link}', description = '${postEdit.description}'  
-                                    WHERE posts.id = ${postId}`)
+        if(post.userId == userId){
+            editionRepository.editPost()
             return res.status(200).send('post was edited')
         }
         return res.status(400).send('user doesnt have this post')

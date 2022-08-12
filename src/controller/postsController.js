@@ -1,4 +1,5 @@
 import { getPosts } from '../repositories/postsRepository.js';
+import urlMetadata from 'url-metadata';
 
 export async function listPosts(req, res) {
     try {
@@ -11,6 +12,10 @@ export async function listPosts(req, res) {
         }
 
         const posts = await getPosts(limit, offset, userId);
+        for (const post of posts) {
+            post.metadata = await urlMetadata(link);
+        }
+
         return res.status(200).send(posts);
 
     } catch (err) {
@@ -18,3 +23,5 @@ export async function listPosts(req, res) {
         return res.sendStatus(500);
     }
 }
+
+

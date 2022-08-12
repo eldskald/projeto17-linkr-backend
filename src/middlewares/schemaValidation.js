@@ -9,10 +9,10 @@ function schemaValidation(schema) {
         }
 
         const validate = schema.validate(body, { abortEarly: false });
-        console.log(validate.error)
         if (validate.error) {
             let messages = validate.error.details.map(value => value.message);
-            return res.status(422).send(messages.join('/n'));
+
+            return res.status(422).send(messages.join('\n'));
         }
 
         res.locals.body = body;

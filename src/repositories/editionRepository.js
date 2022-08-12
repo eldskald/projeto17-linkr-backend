@@ -9,12 +9,12 @@ async function getPost(postId){
     return post[0];
 }
 
-async function editPost(link, description, postId){
+async function editPost(description, postId){
     await connection.query(`
         UPDATE  posts
-        SET link = $1, description = $2  
-        WHERE posts.id = $3`
-    , [link, description, postId])
+        SET description = $1  
+        WHERE posts.id = $2`
+    , [description, postId])
 }
 
 export const editionRepository ={

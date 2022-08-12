@@ -18,7 +18,7 @@ CREATE TABLE posts (
     "userId" INTEGER NOT NULL REFERENCES users(id),
     "link" TEXT NOT NULL,
     "description" VARCHAR(255),
-    "createdAt" DATE NOT NULL DEFAULT NOW()
+    "createdAt" TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE likes (

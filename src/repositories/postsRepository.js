@@ -1,23 +1,52 @@
 import connection from '../../config/database.js';
 
-export async function getPosts(limit, offset, userId) {
-    const { rows } = await connection.query(`
+export async function getPosts(limit, offset) {
+    const { rows: posts } = await connection.query(`
         SELECT
             users.name AS "authorName",
             users."profilePictureUrl" AS "authorPicture",
-            posts.description AS "description",
-            posts.link AS "link",
-            COUNT(likes.id) AS "likesTotal",
-            COUNT(liked.id) AS "liked"
+            posts.description,
+            posts.link
         FROM posts
         JOIN users ON users.id = posts."userId"
-        JOIN likes ON likes."postId" = posts.id
-        JOIN likes liked ON liked."postId" = posts.id
-        WHERE liked."userId" = $1
-        GROUP BY posts.id, users.id
         ORDER BY posts."createdAt" DESC
-        LIMIT $2 OFFSET $3
-    `, [userId, limit, offset]);
-    return rows;
+        LIMIT $1 OFFSET $2
+    `, [limit, offset]);
+    
+    return posts;
 }
 
+export async function insertPost(userId, link, description, hashtags) {
+    const { rows: insertedPost } = await connection.query(`
+        INSERT INTO posts ("userId", link, description)
+        VALUES ($1, $2, $3)
+        RETURNING id
+    `, [userId, link, description]);
+    const postId = insertedPost[0].id;
+
+    let values = [];
+    let where = [];
+    for (const hashtag of hashtags) {
+        values.push(`('${hashtag}')`);
+        where.push(`hashtags.name = '${hashtag}'`);
+    }
+
+    await connection.query(`
+        INSERT INTO hashtags (name)
+        VALUES ${values.join(',\n')}
+        ON CONFLICT (name) DO NOTHING
+    `, []);
+
+    const { rows: ids } = await connection.query(`
+        SELECT id FROM hashtags
+        WHERE ${where.join('\n OR ')}
+    `, []);
+
+    const nextValues = ids.map(row => `('${postId}', '${row.id}')`);
+    await connection.query(`
+        INSERT INTO "postsHashtags" ("postId", "hashtagId")
+        VALUES ${nextValues.join(',\n')}
+    `, []);
+
+    return;
+}

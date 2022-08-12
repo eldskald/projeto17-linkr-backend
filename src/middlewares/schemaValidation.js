@@ -11,7 +11,6 @@ function schemaValidation(schema) {
         const validate = schema.validate(body, { abortEarly: false });
         if (validate.error) {
             let messages = validate.error.details.map(value => value.message);
-
             return res.status(422).send(messages.join('\n'));
         }
 

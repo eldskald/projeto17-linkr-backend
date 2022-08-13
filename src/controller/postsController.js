@@ -1,4 +1,4 @@
-import { getPosts, insertPost,insertLike,deleteLike } from '../repositories/postsRepository.js';
+import { getPosts, insertPost,insertLike,deleteLike,getLikerNames } from '../repositories/postsRepository.js';
 import urlMetadata from 'url-metadata';
 
 export async function listPosts(req, res) {
@@ -70,6 +70,18 @@ export async function unlike(req,res){
         }
         deleteLike(userId,postId);
         return res.sendStatus(200);
+    }catch (err) {
+        console.log(err);
+        return res.sendStatus(500);
+    }
+}
+export async function getNames(req,res){
+    try{
+        const {userId}=res.locals;
+        const {postId}=req.body;
+        const names=await getLikerNames(userId,postId);
+        console.log(names);
+        return res.status(200).send(names);
     }catch (err) {
         console.log(err);
         return res.sendStatus(500);

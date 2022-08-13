@@ -67,3 +67,14 @@ export async function deleteLike(userId,postId){
     DELETE FROM likes WHERE "userId"=$1 AND "postId"=$2
     `,[userId,postId])
 }
+
+export async function getLikerNames(userId, postId){
+    const {rows:names} =await connection.query(`
+    SELECT users.name 
+    FROM posts
+    JOIN likes ON likes."postId" = posts.id
+    JOIN users ON likes."userId" = users.id
+    WHERE posts.id = $1 AND users.id!=$2
+    LIMIT 2;`,[postId,userId])
+    return names;
+}

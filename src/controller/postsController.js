@@ -41,7 +41,7 @@ function findHashtags(text) {
     const hashtags = [];
     for (const word of words) {
         const regex = /^\#[a-zA-Z0-9_]+$/;
-        if (regex.test(word)) hashtags.push(word.slice(1));
+        if (regex.test(word)) hashtags.push(word);
     }
     return hashtags;
 }

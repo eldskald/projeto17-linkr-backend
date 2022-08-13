@@ -14,7 +14,6 @@ export async function listPosts(req, res) {
         for (const post of posts) {
             post.metadata = await urlMetadata(post.link);
         }
-
         return res.status(200).send(posts);
 
     } catch (err) {

@@ -3,6 +3,7 @@ import connection from '../../config/database.js';
 export async function getPosts(limit, offset) {
     const { rows: posts } = await connection.query(`
         SELECT
+            users.id AS "authorId",
             users.name AS "authorName",
             users."profilePictureUrl" AS "authorPicture",
             posts.description,

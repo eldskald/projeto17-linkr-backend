@@ -4,7 +4,7 @@ import { editionRepository } from "../repositories/editionRepository.js";
 export async function deletePostController (req, res){
     const {userId} = res.locals
     const postId = parseInt(req.params.id)
-    console.log('to no delete')
+    
     try {
         const post = await editionRepository.getPost(postId)
         console.log('post.userId :',post.userId)

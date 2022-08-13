@@ -1,17 +1,45 @@
 import connection from '../../config/database.js';
 
-export async function getPosts(limit, offset) {
+export async function getPosts(limit, offset,userId) {
     const { rows: posts } = await connection.query(`
         SELECT
+            users.id AS "authorId",
             users.name AS "authorName",
             users."profilePictureUrl" AS "authorPicture",
             posts.description,
-            posts.link
+            posts.link,
+            posts.id as "postId",
+            COUNT(likes.id) as likes,
+            (SELECT 1 FROM likes l WHERE l."userId"=$3 AND l."postId"=posts.id) AS liked
         FROM posts
         JOIN users ON users.id = posts."userId"
+        LEFT JOIN likes ON likes."postId" = posts.id
+        GROUP BY posts."createdAt",description,"link","authorPicture","authorName","authorId",posts.id
         ORDER BY posts."createdAt" DESC
         LIMIT $1 OFFSET $2
-    `, [limit, offset]);
+    `, [limit, offset,userId]);
+    
+    return posts;
+}
+export async function getPostsByUser(limit, offset,userId) {
+    const { rows: posts } = await connection.query(`
+        SELECT
+            users.id AS "authorId",
+            users.name AS "authorName",
+            users."profilePictureUrl" AS "authorPicture",
+            posts.description,
+            posts.link,
+            posts.id as "postId",
+            COUNT(likes.id) as likes,
+            (SELECT 1 FROM likes l WHERE l."userId"=$3 AND l."postId"=posts.id) AS liked
+        FROM posts
+        JOIN users ON users.id = posts."userId"
+        LEFT JOIN likes ON likes."postId" = posts.id
+        WHERE users.id=$3
+        GROUP BY posts."createdAt",description,"link","authorPicture","authorName","authorId",posts.id
+        ORDER BY posts."createdAt" DESC
+        LIMIT $1 OFFSET $2
+    `, [limit, offset,userId]);
     
     return posts;
 }
@@ -49,4 +77,27 @@ export async function insertPost(userId, link, description, hashtags) {
     `, []);
 
     return;
+}
+
+export async function insertLike(userId,postId){
+    await connection.query(`
+    INSERT INTO likes ("userId","postId") values ($1,$2)
+    `,[userId,postId])
+}
+
+export async function deleteLike(userId,postId){
+    await connection.query(`
+    DELETE FROM likes WHERE "userId"=$1 AND "postId"=$2
+    `,[userId,postId])
+}
+
+export async function getLikerNames(userId, postId){
+    const {rows:names} =await connection.query(`
+    SELECT users.name 
+    FROM posts
+    JOIN likes ON likes."postId" = posts.id
+    JOIN users ON likes."userId" = users.id
+    WHERE posts.id = $1 AND users.id!=$2
+    LIMIT 2;`,[postId,userId])
+    return names;
 }

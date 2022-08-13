@@ -53,3 +53,17 @@ export async function getUser(req,res){
         return res.status(500).send('catch signIn');
     }
 }
+export async function getUserById(req,res){
+    const userId=req.params.id; 
+    try{
+    const user= await authRepository.getUser(userId);
+    if(user){
+        return res.status(200).send(user);
+    }
+    return res.status(404).send("User not found");
+    }
+    catch (error) {
+        console.log(error.message);
+        return res.status(500).send('catch signIn');
+    }
+}

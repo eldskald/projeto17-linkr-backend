@@ -54,6 +54,7 @@ export async function insertPost(userId, link, description, hashtags) {
 
     let values = [];
     let where = [];
+    if(hashtags.length>0){
     for (const hashtag of hashtags) {
         values.push(`('${hashtag}')`);
         where.push(`hashtags.name = '${hashtag}'`);
@@ -75,7 +76,7 @@ export async function insertPost(userId, link, description, hashtags) {
         INSERT INTO "postsHashtags" ("postId", "hashtagId")
         VALUES ${nextValues.join(',\n')}
     `, []);
-
+    }
     return;
 }
 

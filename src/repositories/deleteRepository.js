@@ -1,16 +1,16 @@
 import connection from "../../config/database.js";
 
-async function deletePost(postId){
+async function deletePost(postId, userId){
     console.log('deletePost, postId', postId)
     await connection.query(`
         DELETE FROM "postsHashtags"
-        WHERE "postId" = $1`
+        WHERE "postsHashtags"."postId" = $1`
         , [postId])
-    
     await connection.query(`
         DELETE FROM posts 
-        WHERE posts.id = $1;`
-    , [postId])
+        WHERE posts.id = $1 AND posts."userId" = $2`
+    , [postId,userId])
+    return;
 }
 
 export async function getOnePost(postId) {

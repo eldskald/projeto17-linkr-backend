@@ -2,7 +2,7 @@ import { Router } from 'express';
 import authRouter from './authRouter.js';
 import deletePost from './deletePostRouter.js';
 import postsRouter from './postsRouter.js';
-import editionPost from './editionPost.js';
+import editionPost from './editionPostRouter.js';
 import hashtagRouter from './hashtagRouter.js';
 import searchRouter from './searchRouter.js';
 

@@ -8,9 +8,11 @@ export async function editionController (req, res){
 
    try{
         const post = await editionRepository.getPost(postId)
+        const hastags = editionRepository.findHashtags(description)
+        console.log('hastags :', hastags)
 
         if(post.userId == userId){
-            await editionRepository.editPost(description, postId)
+            await editionRepository.teste(postId, description, hastags)
             return res.status(200).send('post was edited')
         }
         return res.status(400).send('user doesnt have this post') 

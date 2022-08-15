@@ -7,7 +7,8 @@ export async function getPosts(limit, offset) {
             users.name AS "authorName",
             users."profilePictureUrl" AS "authorPicture",
             posts.description,
-            posts.link
+            posts.link,
+            posts.id AS "postId"
         FROM posts
         JOIN users ON users.id = posts."userId"
         ORDER BY posts."createdAt" DESC

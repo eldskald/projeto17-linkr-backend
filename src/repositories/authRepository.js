@@ -29,7 +29,6 @@ async function getUser(userId){
     const {rows:user}=await connection.query(`
     SELECT "id",name,email,"profilePictureUrl" FROM users WHERE id=$1
     `,[userId])
-    console.log('user[0].id', user[0].id)
     return user[0];
 }
 

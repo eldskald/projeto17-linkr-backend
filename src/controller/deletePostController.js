@@ -1,20 +1,20 @@
-import { deleteRepository } from "../repositories/deletRepository.js";
+import { deleteRepository } from "../repositories/deleteRepository.js";
 import { editionRepository } from "../repositories/editionRepository.js";
 
 export async function deletePostController (req, res){
     const {userId} = res.locals
+    console.log('userId : ', userId)
     const postId = parseInt(req.params.id)
+    console.log('postId :', postId)
     
     try {
-        const post = await editionRepository.getPost(postId)
-        console.log('post.userId :',post.userId)
-        console.log('userId', userId)
-        if(post.userId == userId){
-            console.log('to aqui')
+        const post = await deleteRepository.getOnePost(postId)
+        console.log('post.userId :', post.userId)
+        if(post.userId === userId){
             await deleteRepository.deletePost(postId)
             return res.status(200).send('post was deleted')
         }
-        return res.status(400).send('user doesnt have this post')
+        return res.status(400).send('Problem to Delete Post')
 
     } catch (error) {
         console.log('error: ', error)

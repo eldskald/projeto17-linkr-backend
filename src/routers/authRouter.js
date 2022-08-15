@@ -11,5 +11,4 @@ authRouter.post('/signup', schemaValidation(userSchema), signUp)
 authRouter.post('/signin', schemaValidation(logInSchema), signIn)
 authRouter.get('/getuser', validateToken, getUser)
 
-
 export default authRouter

@@ -6,7 +6,7 @@ import postEdit from "../schemas/editSchema.js";
 
 const editionPost = Router()
 
-editionPost.post('/edit/:id',   validateToken,
+editionPost.put('/edit/:id',   validateToken,
                                 schemaValidation(postEdit), 
                                 editionController)
 

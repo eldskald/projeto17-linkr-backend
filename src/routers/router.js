@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import authRouter from './authRouter.js';
+import deletePost from './deletePostRouter.js';
 import postsRouter from './postsRouter.js';
 import editionPost from './editionPost.js';
 import hashtagRouter from './hashtagRouter.js';
@@ -7,9 +8,10 @@ import searchRouter from './searchRouter.js';
 
 const router = Router();
 
-router.use(authRouter);
+router.use(authRouter)
+router.use(editionPost)
+router.use(deletePost)
 router.use(postsRouter);
-router.use(editionPost);
 router.use(hashtagRouter);
 router.use(searchRouter);
 

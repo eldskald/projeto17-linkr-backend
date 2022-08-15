@@ -8,9 +8,13 @@ export async function getPosts(limit, offset,userId) {
             users."profilePictureUrl" AS "authorPicture",
             posts.description,
             posts.link,
+<<<<<<< HEAD
             posts.id as "postId",
             COUNT(likes.id) as likes,
             (SELECT 1 FROM likes l WHERE l."userId"=$3 AND l."postId"=posts.id) AS liked
+=======
+            posts.id AS "postId"
+>>>>>>> 8bd59d2852905bdf0edc1271bf95159069400d9b
         FROM posts
         JOIN users ON users.id = posts."userId"
         LEFT JOIN likes ON likes."postId" = posts.id

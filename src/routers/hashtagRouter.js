@@ -4,7 +4,7 @@ import { validateToken } from '../middlewares/authenticateToken.js';
 
 const router = Router();
 
-router.get('/hashtags', validateToken, listHashtag);
+router.get('/hashtags', listHashtag);
 router.get('/hashtags/:hashtag', validateToken, getSingleHashtag);
 
 export default router;

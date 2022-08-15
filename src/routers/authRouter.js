@@ -13,5 +13,4 @@ authRouter.get('/getuser', validateToken, getUser)
 authRouter.get('/getuser/:id', validateToken, getUserById)
 
 
-
 export default authRouter

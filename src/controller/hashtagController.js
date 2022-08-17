@@ -25,8 +25,15 @@ export async function getSingleHashtag(req, res){
     try {
         const singleHashtags = await getHashtag(limit, offset, userId, urlHashtag);
         for (const singleHashtag of singleHashtags) {
-            singleHashtag.metadata = await urlMetadata(singleHashtag.link);
+            try{
+                singleHashtag.metadata = await urlMetadata(singleHashtag.link);
+                }
+                catch{
+                    singleHashtag.metadata = {url:singleHashtag.link};
+                    continue;
+                }
         }
+
         
         return res.status(200).send(singleHashtags);
 

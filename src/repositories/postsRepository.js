@@ -2,27 +2,55 @@ import connection from '../../config/database.js';
 
 export async function getPosts(limit, offset,userId) {
     const { rows: posts } = await connection.query(`
-        SELECT
-            users.id AS "authorId",
-            users.name AS "authorName",
-            users."profilePictureUrl" AS "authorPicture",
-            posts.description,
-            posts.link,
-            posts.id as "postId",
-            COUNT(likes.id) as likes,
-            (SELECT 1 FROM likes l WHERE l."userId"=$3 AND l."postId"=posts.id) AS liked
-        FROM posts
-        JOIN users ON users.id = posts."userId"
-        LEFT JOIN likes ON likes."postId" = posts.id
-        WHERE EXISTS (SELECT 1 FROM follows WHERE follows."followerId" = $3 AND follows."followedId" = users.id)
-        GROUP BY posts."createdAt",description,"link","authorPicture","authorName","authorId",posts.id
-        ORDER BY posts."createdAt" DESC
-        LIMIT $1 OFFSET $2
+    (SELECT 
+        users.id AS "authorId",
+        users.name AS "authorName",
+        users."profilePictureUrl" AS "authorPicture",
+        posts.description,
+        posts.link,
+        posts.id as "postId",
+        posts."createdAt" AS "createdTime",
+        NULL AS "reposterName",
+        COUNT(likes.id) as likes,
+        COUNT(reposts.id) AS "repostCount",
+        (SELECT 1 FROM likes l WHERE l."userId"=$3 AND l."postId"=posts.id LIMIT 1) AS liked
+        
+    FROM posts   
+    JOIN users ON users.id = posts."userId"
+    LEFT JOIN likes ON likes."postId" = posts.id
+    LEFT JOIN reposts ON reposts."repostedPost" = posts.id
+    WHERE EXISTS (SELECT 1 FROM follows WHERE follows."followerId" = $3 AND follows."followedId" = users.id LIMIT 1)
+    GROUP BY posts."createdAt",description,"link","authorPicture","authorName","authorId",posts.id
+
+    UNION ALL
+    
+    SELECT
+        users.id AS "authorId",
+        users.name AS "authorName",
+        users."profilePictureUrl" AS "authorPicture",
+        posts.description,
+        posts.link,
+        posts.id as "postId",
+        reposts."createdAt" AS "createdTime",
+        reposter.name AS "reposterName",
+        COUNT(likes.id) as likes,
+        COUNT(reposts.id) AS repostsCount,
+        (SELECT 1 FROM likes l WHERE l."userId"=$3 AND l."postId"=posts.id LIMIT 1) AS liked
+    
+    FROM posts
+    LEFT JOIN reposts ON posts.id = reposts."repostedPost"
+    JOIN users ON users.id = posts."userId"
+    JOIN users AS reposter ON reposts."reposterId" = reposter.id
+    LEFT JOIN likes ON likes."postId" = posts.id
+    WHERE EXISTS (SELECT 1 FROM follows WHERE follows."followerId" = $3 AND follows."followedId" = users.id LIMIT 1)
+    GROUP BY reposter.name, reposts."createdAt",description,"link","authorPicture","authorName","authorId",posts.id)
+    ORDER BY "createdTime" DESC
+    LIMIT $1 OFFSET $2
     `, [limit, offset,userId]);
     
     return posts;
 }
-export async function getPostsByUser(limit, offset,userId) {
+export async function getPostsByUser(limit, offset,userId,timelineOwnerId) {
     const { rows: posts } = await connection.query(`
         SELECT
             users.id AS "authorId",
@@ -32,15 +60,15 @@ export async function getPostsByUser(limit, offset,userId) {
             posts.link,
             posts.id as "postId",
             COUNT(likes.id) as likes,
-            (SELECT 1 FROM likes l WHERE l."userId"=$3 AND l."postId"=posts.id) AS liked
+            (SELECT 1 FROM likes l WHERE l."userId"=$3 AND l."postId"=posts.id LIMIT 1) AS liked
         FROM posts
         JOIN users ON users.id = posts."userId"
         LEFT JOIN likes ON likes."postId" = posts.id
-        WHERE users.id=$3
+        WHERE users.id=$4
         GROUP BY posts."createdAt",description,"link","authorPicture","authorName","authorId",posts.id
         ORDER BY posts."createdAt" DESC
         LIMIT $1 OFFSET $2
-    `, [limit, offset,userId]);
+    `, [limit, offset,userId,timelineOwnerId]);
     
     return posts;
 }

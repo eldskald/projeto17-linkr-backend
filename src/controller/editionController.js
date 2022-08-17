@@ -1,4 +1,3 @@
-import connection from "../../config/database.js";
 import { editionRepository } from "../repositories/editionRepository.js";
 
 export async function editionController (req, res){
@@ -8,7 +7,7 @@ export async function editionController (req, res){
 
    try{
         const hastags = editionRepository.findHashtags(description)
-
+        
         await editionRepository.editPost(postId,userId, description, hastags)
         return res.status(200).send('post was edited')
 

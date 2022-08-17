@@ -17,7 +17,7 @@ export async function getHashtag(limit, offset, userId, urlHashtag){
             posts.link,
             posts.id as "postId",
             COUNT(likes.id) as likes,
-            (SELECT 1 FROM likes l WHERE l."userId"=$3 AND l."postId"=posts.id) AS liked
+            (SELECT 1 FROM likes l WHERE l."userId"=$3 AND l."postId"=posts.id LIMIT 1) AS liked
         FROM posts
         JOIN users ON users.id = posts."userId"
         JOIN "postsHashtags" ON posts.id = "postsHashtags"."postId"

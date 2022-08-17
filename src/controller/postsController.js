@@ -60,7 +60,6 @@ export async function newLike(req,res){
         console.log(err);
         return res.sendStatus(500);
     }
-
 }
 export async function unlike(req,res){
     try{

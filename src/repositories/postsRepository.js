@@ -14,6 +14,7 @@ export async function getPosts(limit, offset,userId) {
         FROM posts
         JOIN users ON users.id = posts."userId"
         LEFT JOIN likes ON likes."postId" = posts.id
+        WHERE EXISTS (SELECT 1 FROM follows WHERE follows."followerId" = $3 AND follows."followedId" = users.id)
         GROUP BY posts."createdAt",description,"link","authorPicture","authorName","authorId",posts.id
         ORDER BY posts."createdAt" DESC
         LIMIT $1 OFFSET $2

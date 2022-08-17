@@ -48,7 +48,7 @@ export async function getPosts(limit, offset,userId) {
     
     return posts;
 }
-export async function getPostsByUser(limit, offset,userId) {
+export async function getPostsByUser(limit, offset,userId,timelineOwnerId) {
     const { rows: posts } = await connection.query(`
         SELECT
             users.id AS "authorId",
@@ -62,11 +62,11 @@ export async function getPostsByUser(limit, offset,userId) {
         FROM posts
         JOIN users ON users.id = posts."userId"
         LEFT JOIN likes ON likes."postId" = posts.id
-        WHERE users.id=$3
+        WHERE users.id=$4
         GROUP BY posts."createdAt",description,"link","authorPicture","authorName","authorId",posts.id
         ORDER BY posts."createdAt" DESC
         LIMIT $1 OFFSET $2
-    `, [limit, offset,userId]);
+    `, [limit, offset,userId,timelineOwnerId]);
     
     return posts;
 }

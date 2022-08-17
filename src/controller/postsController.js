@@ -89,14 +89,15 @@ export async function getNames(req,res){
 export async function listPostsByUser(req, res) {
     try {
         let { limit, offset } = req.query;
-        const userId=req.params.id;
+        const {userId}=res.locals;
+        const timelineOwnerId=req.params.id;
         limit = parseInt(limit);
         offset = parseInt(offset);
         if (isNaN(limit) || isNaN(offset) || limit <= offset || offset < 0) {
             return res.sendStatus(400);
         }
 
-        const posts = await getPostsByUser(limit, offset,userId);
+        const posts = await getPostsByUser(limit, offset,userId,timelineOwnerId);
         for (const post of posts) {
             post.metadata = await urlMetadata(post.link);
         }

@@ -54,9 +54,10 @@ export async function getUser(req,res){
     }
 }
 export async function getUserById(req,res){
-    const userId=req.params.id; 
+    const userId= res.locals.userId;
+    const searchedId = req.params.id;
     try{
-    const user= await authRepository.getUser(userId);
+    const user= await authRepository.getUserPage(searchedId, userId);
     if(user){
         return res.status(200).send(user);
     }

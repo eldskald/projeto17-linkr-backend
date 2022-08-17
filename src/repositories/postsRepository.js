@@ -19,6 +19,7 @@ export async function getPosts(limit, offset,userId) {
     JOIN users ON users.id = posts."userId"
     LEFT JOIN likes ON likes."postId" = posts.id
     LEFT JOIN reposts ON reposts."repostedPost" = posts.id
+    WHERE EXISTS (SELECT 1 FROM follows WHERE follows."followerId" = $3 AND follows."followedId" = users.id)
     GROUP BY posts."createdAt",description,"link","authorPicture","authorName","authorId",posts.id
 
     UNION ALL
@@ -41,6 +42,7 @@ export async function getPosts(limit, offset,userId) {
     JOIN users ON users.id = posts."userId"
     JOIN users AS reposter ON reposts."reposterId" = reposter.id
     LEFT JOIN likes ON likes."postId" = posts.id
+    WHERE EXISTS (SELECT 1 FROM follows WHERE follows."followerId" = $3 AND follows."followedId" = users.id)
     GROUP BY reposter.name, reposts."createdAt",description,"link","authorPicture","authorName","authorId",posts.id)
     ORDER BY "createdTime" DESC
     LIMIT $1 OFFSET $2

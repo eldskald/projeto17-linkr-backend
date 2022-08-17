@@ -31,11 +31,24 @@ async function getUser(userId){
     `,[userId])
     return user[0];
 }
+async function getUserPage(userId, followerId) {
+    const { rows } = await connection.query(`
+        SELECT
+            users.id,
+            users.name,
+            users."profilePictureUrl",
+            (SELECT 1 FROM follows f WHERE f."followerId"=$2 AND f."followedId"=$1) AS following
+        FROM users
+        WHERE users.id = $1
+    `, [userId, followerId]);
+    return rows[0];
+}
 
 export const authRepository ={
     signUp,
     signIn,
     newSession,
     getUser,
-    emailCheck
+    emailCheck,
+    getUserPage
 }

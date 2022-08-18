@@ -16,3 +16,13 @@ export async function findComments(userId, postId, limit, offset) {
     `, [userId, postId, limit, offset]);
     return rows;
 }
+
+export async function countComments(postId) {
+    const { rows } = await connection.query(`
+        SELECT COUNT(comments.id) AS "total" FROM comments
+        WHERE comments."postId" = $1
+        GROUP BY comments.id
+    `, [postId]);
+    if (rows.length === 0) return 0;
+    else return rows[0].total;
+}

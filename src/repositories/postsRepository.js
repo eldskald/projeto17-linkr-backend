@@ -79,6 +79,13 @@ export async function getPostsByUser(limit, offset,userId,timelineOwnerId) {
     return posts;
 }
 
+export async function findPostById(postId) {
+    const { rows } = await connection.query(`
+        SELECT * FROM posts WHERE id = $1
+    `, [postId]);
+    return rows[0];
+}
+
 export async function insertPost(userId, link, description, hashtags) {
     const { rows: insertedPost } = await connection.query(`
         INSERT INTO posts ("userId", link, description)

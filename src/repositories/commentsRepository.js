@@ -20,12 +20,9 @@ export async function findComments(userId, postId, limit, offset) {
 
 export async function countComments(postId) {
     const { rows } = await connection.query(`
-        SELECT COUNT(comments.id) AS "total" FROM comments
-        WHERE comments."postId" = $1
-        GROUP BY comments.id
+        SELECT COUNT(id) AS "total" FROM comments WHERE "postId" = $1
     `, [postId]);
-    if (rows.length === 0) return 0;
-    else return rows[0].total;
+    return rows[0].total;
 }
 export async function insertComment(userId,postId,comment){
     await connection.query(`

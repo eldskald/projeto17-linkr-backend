@@ -16,15 +16,14 @@ export async function getHashtag(limit, offset, userId, urlHashtag){
             posts.description,
             posts.link,
             posts.id as "postId",
-            COUNT(likes.id) as likes,
-            COUNT(comments.id) AS "commentCount",
+            (SELECT COUNT(likes.id) FROM likes WHERE likes."postId"=posts.id) as likes,
+            (SELECT COUNT(reposts.id) FROM reposts WHERE reposts."repostedPost"=posts.id) AS "repostCount",
+            (SELECT COUNT(comments.id) FROM comments WHERE comments."postId"=posts.id) AS "commentCount",
             (SELECT 1 FROM likes l WHERE l."userId"=$3 AND l."postId"=posts.id LIMIT 1) AS liked
         FROM posts
         JOIN users ON users.id = posts."userId"
         JOIN "postsHashtags" ON posts.id = "postsHashtags"."postId"
         JOIN hashtags ON "postsHashtags"."hashtagId" = hashtags.id
-        LEFT JOIN likes ON likes."postId" = posts.id
-        LEFT JOIN comments ON comments."postId" = posts.id
         WHERE hashtags.name = $4
         GROUP BY posts."createdAt",description,"link","authorPicture","authorName","authorId",posts.id
         ORDER BY posts."createdAt" DESC

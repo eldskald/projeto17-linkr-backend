@@ -26,3 +26,8 @@ export async function countComments(postId) {
     if (rows.length === 0) return 0;
     else return rows[0].total;
 }
+export async function insertComment(userId,postId,comment){
+    await connection.query(`
+    insert into "comments" ("postId","comment","userId") VALUES ($2,$3,$1) 
+    `,[userId,postId,comment])
+}

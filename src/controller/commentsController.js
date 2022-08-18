@@ -1,4 +1,4 @@
-import { countComments, findComments } from '../repositories/commentsRepository.js';
+import { countComments, findComments,insertComment } from '../repositories/commentsRepository.js';
 import { findPostById } from '../repositories/postsRepository.js';
 
 export async function getComments(req, res) {
@@ -20,6 +20,22 @@ export async function getComments(req, res) {
         return res.status(200).send({ comments, commentsTotal });
 
     } catch (err) {
+        console.log(err);
+        return res.sendStatus(500);
+    }
+}
+export async function newComments(req,res){
+    try{
+        const {userId}=res.locals;
+        const {comment}=req.body;
+        const postId=req.params.postId
+        const post = await findPostById(postId);
+
+        if (!post) return res.sendStatus(404);
+        await insertComment(userId,postId,comment);
+        return res.sendStatus(201);
+    }
+    catch (err) {
         console.log(err);
         return res.sendStatus(500);
     }

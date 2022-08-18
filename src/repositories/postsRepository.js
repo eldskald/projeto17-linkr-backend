@@ -89,14 +89,15 @@ export async function getPostsByUser(limit, offset,userId,timelineOwnerId) {
             (SELECT COUNT(reposts.id) FROM reposts WHERE reposts."repostedPost"=posts.id) AS "repostCount",
             (SELECT COUNT(comments.id) FROM comments WHERE comments."postId"=posts.id) AS "commentCount",
             (SELECT 1 FROM likes l WHERE l."userId"=$3 AND l."postId"=posts.id LIMIT 1) AS liked
+
         FROM posts
         JOIN reposts ON reposts."repostedPost" = posts.id 
         JOIN users AS reposter ON reposts."reposterId" = reposter.id
         JOIN users ON users.id = posts."userId"
-        WHERE users.id=$4
+        WHERE reposter.id=$4
         GROUP BY reposter.name,reposter.id,"createdTime",posts."createdAt",description,"link","authorPicture","authorName","authorId",posts.id
 
-        ORDER BY posts."createdAt" DESC
+        ORDER BY "createdTime" DESC
         LIMIT $1 OFFSET $2
     `, [limit, offset,userId,timelineOwnerId]);
     

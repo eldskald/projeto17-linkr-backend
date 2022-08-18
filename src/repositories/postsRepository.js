@@ -11,6 +11,7 @@ export async function getPosts(limit, offset,userId) {
         posts.id as "postId",
         posts."createdAt" AS "createdTime",
         NULL AS "reposterName",
+        NULL AS "reposterId",
         COUNT(likes.id) as likes,
         COUNT(reposts.id) AS "repostCount",
         COUNT(comments.id) AS "commentCount",
@@ -35,6 +36,7 @@ export async function getPosts(limit, offset,userId) {
         posts.id as "postId",
         reposts."createdAt" AS "createdTime",
         reposter.name AS "reposterName",
+        reposter.id AS "resposterId",
         COUNT(likes.id) as likes,
         COUNT(reposts.id) AS repostsCount,
         COUNT(comments.id) AS "commentCount",
@@ -46,8 +48,8 @@ export async function getPosts(limit, offset,userId) {
     JOIN users AS reposter ON reposts."reposterId" = reposter.id
     LEFT JOIN likes ON likes."postId" = posts.id
     LEFT JOIN comments ON comments."postId" = posts.id
-    WHERE EXISTS (SELECT 1 FROM follows WHERE follows."followerId" = $3 AND follows."followedId" = users.id LIMIT 1)
-    GROUP BY reposter.name, reposts."createdAt",description,"link","authorPicture","authorName","authorId",posts.id)
+    WHERE EXISTS (SELECT 1 FROM follows WHERE follows."followerId" = $3 AND follows."followedId" = reposter.id LIMIT 1)
+    GROUP BY reposter.id,reposter.name, reposts."createdAt",description,"link","authorPicture","authorName","authorId",posts.id)
     ORDER BY "createdTime" DESC
     LIMIT $1 OFFSET $2
     `, [limit, offset,userId]);

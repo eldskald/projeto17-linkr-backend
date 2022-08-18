@@ -12,6 +12,7 @@ export async function findComments(userId, postId, limit, offset) {
         FROM comments
         JOIN users ON users.id = comments."userId"
         WHERE comments."postId" = $2
+        ORDER BY comments."createdAt"
         LIMIT $3 OFFSET $4
     `, [userId, postId, limit, offset]);
     return rows;

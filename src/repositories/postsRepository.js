@@ -169,3 +169,56 @@ export async function getLikerNames(userId, postId){
     LIMIT 2;`,[postId,userId])
     return names;
 }
+
+export async function getNewPosts(userId, lastPostTimeline) {
+    const { rows: newPosts } = await connection.query(`
+    SELECT 
+        users.id AS "authorId",
+        users.name AS "authorName",
+        users."profilePictureUrl" AS "authorPicture",
+        posts.description,
+        posts.link,
+        posts.id as "postId",
+        posts."createdAt" AS "createdTime",
+        NULL AS "reposterName",
+        NULL AS "reposterId",
+        (SELECT COUNT(likes.id) FROM likes WHERE likes."postId"=posts.id) as likes,
+        (SELECT COUNT(reposts.id) FROM reposts WHERE reposts."repostedPost"=posts.id) AS "repostCount",
+        (SELECT COUNT(comments.id) FROM comments WHERE comments."postId"=posts.id) AS "commentCount",
+        (SELECT 1 FROM likes l WHERE l."userId"=$1 AND l."postId"=posts.id LIMIT 1) AS liked
+        
+    FROM posts   
+    JOIN users ON users.id = posts."userId"
+    WHERE EXISTS (SELECT 1 FROM follows WHERE follows."followerId" = $1 AND follows."followedId" = users.id LIMIT 1) AND posts."createdAt" > $2
+    GROUP BY posts."createdAt",description,"link","authorPicture","authorName","authorId",posts.id
+    
+    UNION
+    
+    SELECT
+        users.id AS "authorId",
+        users.name AS "authorName",
+        users."profilePictureUrl" AS "authorPicture",
+        posts.description,
+        posts.link,
+        posts.id as "postId",
+        reposts."createdAt" AS "createdTime",
+        reposter.name AS "reposterName",
+        reposter.id AS "reposterId",
+        (SELECT COUNT(likes.id) FROM likes WHERE likes."postId"=posts.id) as likes,
+        (SELECT COUNT(reposts.id) FROM reposts WHERE reposts."repostedPost"=posts.id) AS "repostCount",
+        (SELECT COUNT(comments.id) FROM comments WHERE comments."postId"=posts.id) AS "commentCount",
+        (SELECT 1 FROM likes l WHERE l."userId"=$1 AND l."postId"=posts.id LIMIT 1) AS liked
+    
+    FROM posts
+    JOIN reposts ON reposts."repostedPost" = posts.id 
+    JOIN users ON users.id = posts."userId"
+    JOIN users AS reposter ON reposts."reposterId" = reposter.id
+    WHERE EXISTS (SELECT 1 FROM follows WHERE follows."followerId" = $1 AND follows."followedId" = reposter.id LIMIT 1) AND posts."createdAt" > $2
+    GROUP BY reposter.id,reposter.name, reposts."createdAt",description,"link","authorPicture","authorName","authorId",posts.id
+    
+    ORDER BY "createdTime" DESC
+
+    `, [ userId, lastPostTimeline]);
+    
+    return newPosts;
+}

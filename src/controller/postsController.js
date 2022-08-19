@@ -1,4 +1,4 @@
-import { getPosts, insertPost,insertLike,deleteLike,getLikerNames, getPostsByUser } from '../repositories/postsRepository.js';
+import { getPosts, insertPost, insertLike, deleteLike, getLikerNames, getPostsByUser, getNewPosts} from '../repositories/postsRepository.js';
 import urlMetadata from 'url-metadata';
 
 export async function listPosts(req, res) {
@@ -120,4 +120,18 @@ export async function listPostsByUser(req, res) {
         console.log(err);
         return res.sendStatus(500);
     }
+}
+
+export async function newPosts(req, res){
+    let newPosts
+    try {
+        const userId = res.locals.userId
+        const lastPostTimeline = req.params.time;
+        newPosts = await getNewPosts( userId, lastPostTimeline);
+    } catch (err) {
+        console.log(err);
+        return res.sendStatus(500);
+    }
+
+    return res.status(200).send(newPosts);
 }

@@ -1,4 +1,4 @@
-import { getPosts, insertPost,insertLike,deleteLike,getLikerNames, getPostsByUser } from '../repositories/postsRepository.js';
+import { getPosts, insertPost, insertLike, deleteLike, getLikerNames, getPostsByUser, getNewPosts} from '../repositories/postsRepository.js';
 import urlMetadata from 'url-metadata';
 
 export async function listPosts(req, res) {
@@ -8,7 +8,7 @@ export async function listPosts(req, res) {
         const userId=res.locals.userId
         limit = parseInt(limit);
         offset = parseInt(offset);
-        if (isNaN(limit) || isNaN(offset) || limit <= offset || offset < 0) {
+        if (isNaN(limit) || isNaN(offset) || limit < 0 || offset < 0) {
             return res.sendStatus(400);
         }
         posts = await getPosts(limit, offset,userId);
@@ -100,7 +100,7 @@ export async function listPostsByUser(req, res) {
         const timelineOwnerId=req.params.id;
         limit = parseInt(limit);
         offset = parseInt(offset);
-        if (isNaN(limit) || isNaN(offset) || limit <= offset || offset < 0) {
+        if (isNaN(limit) || isNaN(offset) || limit < 0 || offset < 0) {
             return res.sendStatus(400);
         }
 
@@ -120,4 +120,18 @@ export async function listPostsByUser(req, res) {
         console.log(err);
         return res.sendStatus(500);
     }
+}
+
+export async function newPosts(req, res){
+    let newPosts
+    try {
+        const userId = res.locals.userId
+        const lastPostTimeline = req.params.time;
+        newPosts = await getNewPosts( userId, lastPostTimeline);
+    } catch (err) {
+        console.log(err);
+        return res.sendStatus(500);
+    }
+
+    return res.status(200).send(newPosts);
 }

@@ -4,7 +4,6 @@ export async function newRepost(req,res){
     try{
         const {userId}=res.locals;
         const postId = req.params.postId
-        console.log("attempt")
         if(!postId){
             return res.status(404).send("This post is not available");
         }

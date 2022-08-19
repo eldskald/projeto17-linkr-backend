@@ -8,7 +8,7 @@ export async function listPosts(req, res) {
         const userId=res.locals.userId
         limit = parseInt(limit);
         offset = parseInt(offset);
-        if (isNaN(limit) || isNaN(offset) || limit <= offset || offset < 0) {
+        if (isNaN(limit) || isNaN(offset) || limit < 0 || offset < 0) {
             return res.sendStatus(400);
         }
         posts = await getPosts(limit, offset,userId);
@@ -100,7 +100,7 @@ export async function listPostsByUser(req, res) {
         const timelineOwnerId=req.params.id;
         limit = parseInt(limit);
         offset = parseInt(offset);
-        if (isNaN(limit) || isNaN(offset) || limit <= offset || offset < 0) {
+        if (isNaN(limit) || isNaN(offset) || limit < 0 || offset < 0) {
             return res.sendStatus(400);
         }
 

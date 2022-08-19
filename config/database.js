@@ -5,18 +5,13 @@ config();
 
 const { Pool } = pg;
 
-const user = 'postgres';
-const password = 'postgres';
-const host = 'localhost';
-const port = 5432;
-const database = 'linkr';
+const databaseConfig = {
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+        rejectUnauthorized: false
+    }
+};
 
-const connection = new Pool({
-  user,
-  password,
-  host,
-  port,
-  database
-});
+const connection = new Pool(databaseConfig);
 
 export default connection;
